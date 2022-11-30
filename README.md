@@ -22,3 +22,4 @@ docker stats unlimited
 ```
 - in tab1, you can now see: "bash: fork: Resource temporarily unavailible"
 - try to open new tab, it will be frozen
+- to get new killercoda enviroment - click Restart
