@@ -47,4 +47,61 @@ spec:
 - example: `touch a.txt` will result in - `touch: cannot touch 'a.txt': Read-only file system`
 
 ### Enforcing proper pod configuration with Kyverno
-- TBD with Kyverno
+- create a scenario on killerconda - https://killercoda.com/playgrounds/scenario/kubernetes
+- Install Kyverno (recomended way is through helm, but for demo it is faster with kubectl)
+```
+kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
+```
+- put the following contents to `/tmp/require-root-only-fs-policy.yml`:
+```
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-ro-rootfs
+  annotations:
+    policies.kyverno.io/title: Require Read-Only Root Filesystem
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      A read-only root file system helps to enforce an immutable infrastructure strategy;
+      the container only needs to write on the mounted volume that persists the state.
+      An immutable root filesystem can also prevent malicious binaries from writing to the
+      host system. This policy validates that containers define a securityContext
+      with `readOnlyRootFilesystem: true`.
+spec:
+  # Specifies action done when validation fails
+  # Allowed values: 'Audit' (report but allow) | 'Enforce' (don't allow to create invalid resource)
+  validationFailureAction: Enforce
+  # Specifies if policy applies also on already existing resources
+  # If set to true, then violations are reported (but existing resources are not blocked - 'audit' semantics)
+  background: true
+  rules:
+  - name: validate-readOnlyRootFilesystem
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Root filesystem must be read-only."
+      pattern:
+        spec:
+          containers:
+          - securityContext:
+              readOnlyRootFilesystem: true
+```
+- create a cluster policy with: `kubectl apply -f /tmp/require-root-only-fs-policy.yml`
+- to list cluster policies - `kubectl get cpol`
+- try to create pod with writable root filesystem - ["demonstration" section](#demonstration)
+```
+kubectl apply -f /tmp/unsecure-pod.yml
+Error from server: error when creating "/tmp/unsecure-pod.yml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+
+policy Pod/default/unsecure-pod for resource violation: 
+
+require-ro-rootfs:
+  validate-readOnlyRootFilesystem: 'validation error: Root filesystem must be read-only.
+    rule validate-readOnlyRootFilesystem failed at path /spec/containers/0/securityContext/'
+```
+- try to create pod with read-only root filesystem from - ["prevention" section](#prevention)
+  - pod will be sucessfully created
