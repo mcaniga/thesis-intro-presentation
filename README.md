@@ -105,3 +105,7 @@ require-ro-rootfs:
 ```
 - try to create pod with read-only root filesystem from - ["prevention" section](#prevention)
   - pod will be sucessfully created
+
+### Comparision with OPA Gatekeeper
+- compare the readability (declarative vs imperative paradigm) of the same policy with OPA Gatekeeper
+- https://open-policy-agent.github.io/gatekeeper-library/website/read-only-root-filesystem/
