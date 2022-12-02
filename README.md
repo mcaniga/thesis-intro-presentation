@@ -103,6 +103,7 @@ require-ro-rootfs:
   validate-readOnlyRootFilesystem: 'validation error: Root filesystem must be read-only.
     rule validate-readOnlyRootFilesystem failed at path /spec/containers/0/securityContext/'
 ```
+- to list policy reports: `kubectl get polr -A`
 - try to create pod with read-only root filesystem from - ["prevention" section](#prevention)
   - pod will be sucessfully created
 
