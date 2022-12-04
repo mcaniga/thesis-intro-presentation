@@ -5,7 +5,7 @@
 - in such filesystem, everybody with access to the container can tamper with files and read secret configuration, see system files, ...
 
 ### Demonstration
-- create a scenario on killerconda - https://killercoda.com/playgrounds/scenario/kubernetes
+- create a scenario on killercoda - https://killercoda.com/playgrounds/scenario/kubernetes
 - put the following contents to `/tmp/unsecure-pod.yml`:
 ```
 apiVersion: v1
@@ -47,7 +47,7 @@ spec:
 - example: `touch a.txt` will result in - `touch: cannot touch 'a.txt': Read-only file system`
 
 ### Enforcing proper pod configuration with Kyverno
-- create a scenario on killerconda - https://killercoda.com/playgrounds/scenario/kubernetes
+- create a scenario on killercoda - https://killercoda.com/playgrounds/scenario/kubernetes
 - Install Kyverno (recomended way is through helm, but for demo it is faster with kubectl)
 ```
 kubectl create -f https://raw.githubusercontent.com/kyverno/kyverno/main/config/install.yaml
